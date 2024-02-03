@@ -20,9 +20,12 @@ public enum TestStates
     MvtRecorded, //Movement has been recorded and validated
     MvtTesting,
     MvtTested, //Movement has been tested and validated
-    BtwTrialCheck,
-    TrialInProgress, //Ongoing spasticity testing
-    TrialFinished,
+    //BtwTrialCheck,
+    //TrialInProgress, //Ongoing spasticity testing
+    //TrialFinished,
+    EMDstatic,
+    EMDvoluntary,
+    EMDpassive,
     MaxForceDetcted,
     MinJerkFailed,
     RobotDisabled,
@@ -33,9 +36,9 @@ public enum TestStates
 public class CenterControl : MonoBehaviour
 {
     //UI elements
-    public Button InitButton, RecordButton, TestButton, StartButton, ContinueButton, StopButton, QuitButton;
+    public Button InitButton, RecordButton, TestButton, EMDSButton, EMDVButton, EMDPButton, ReturnButton, StopButton, QuitButton;
     public Toggle EMGToggle;
-    public InputField PatientIDInputField, SessionIDInputField;
+    public InputField SubjectIDInputField, SessionIDInputField;
     public Slider ProgressSlider;
     public Text SubjectInstructionsText, InstructionsText;
 
@@ -51,7 +54,7 @@ public class CenterControl : MonoBehaviour
     //Logging
     public StringBuilder csvcontent;
     public String CurrentCSVFilenameCORC = "", CurrentCSVFilenameEMG = "";
-    string csvpath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//SpasticityStudyData//" + DateTime.Now.ToString("yyyy-MM-dd_HH_mm_ss");
+    string csvpath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//AssistRobotStudyData//" + DateTime.Now.ToString("yyyy-MM-dd_HH_mm_ss");
 
     //Test logic and parameters
     private TestStates TestState;
@@ -81,8 +84,10 @@ public class CenterControl : MonoBehaviour
         InitButton.onClick.AddListener(Init_cb);
         RecordButton.onClick.AddListener(RecordMvt_cb);
         TestButton.onClick.AddListener(Test_cb);
-        StartButton.onClick.AddListener(Start_cb);
-        ContinueButton.onClick.AddListener(Continue_cb);
+        EMDSButton.onClick.AddListener(EMDS_cb);
+        EMDVButton.onClick.AddListener(EMDV_cb);
+        EMDPButton.onClick.AddListener(EMDP_cb);
+        ReturnButton.onClick.AddListener(Return_cb);
         StopButton.onClick.AddListener(Stop_cb);
         QuitButton.onClick.AddListener(Quit_cb);
         
@@ -156,59 +161,19 @@ public class CenterControl : MonoBehaviour
 				TestState = TestStates.Initialised;
 				SubjectInstructionsText.text = "Reset done.";	
 			    break;
-			case 10:
-			    TestState = TestStates.BtwTrialCheck;
-			    SubjectInstructionsText.text = "Start next velocity when ready.";	
-			    break;
-			case 11: //velocity 1
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 1/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 12: //velocity 2
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 2/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 13: //velocity 3
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 3/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 14: //velocity 4
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 4/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 15: //velocity 5
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 5/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 16: //velocity 6
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 6/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 17: //velocity 7
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 7/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 18: //velocity 8
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 8/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 19: //velocity 9
-			    TestState = TestStates.TrialInProgress;
-			    SubjectInstructionsText.text = "Trial in progress 9/9.";
-			    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
-			    break;
-			case 20:
-			    TestState = TestStates.TrialFinished;
-			    SubjectInstructionsText.text = "Trial finished! Thank you.";
-			    break;			
+			//case 10:
+			//    TestState = TestStates.BtwTrialCheck;
+			//    SubjectInstructionsText.text = "Start next velocity when ready.";	
+			//    break;
+			//case 11: //velocity 1
+			//    TestState = TestStates.TrialInProgress;
+			//    SubjectInstructionsText.text = "Trial in progress 1/9.";
+			//    ProgressSlider.value = ((int)(M2Robot.State["S"][0])-10) / (float)9.0 * (float)100.0;
+			//    break;
+			//case 20:
+			//    TestState = TestStates.TrialFinished;
+			//    SubjectInstructionsText.text = "Trial finished! Thank you.";
+			//    break;			
 			case 21: //max force/speed detected before trial
 			    TestState = TestStates.Initialised; 
 				SubjectInstructionsText.text = "Safety Limit Reached! Please record again.";
@@ -225,6 +190,23 @@ public class CenterControl : MonoBehaviour
 				TestState = TestStates.RobotDisabled;
 				SubjectInstructionsText.text = "Safety Limit Reached! Relax and press reset when ready.";
 				break;
+			//Newly defined
+			case 31: 
+			    TestState = TestStates.EMDstatic; 
+				SubjectInstructionsText.text = "EMD Test Static.";
+			    break;
+			case 32: 
+			    TestState = TestStates.EMDvoluntary; 
+				SubjectInstructionsText.text = "EMD Test Voluntary.";
+			    break;
+			case 33:
+				TestState = TestStates.EMDpassive;
+				SubjectInstructionsText.text = "EMD Test Passive.";
+				break;
+			case 34:
+				TestState = TestStates.EMDpassive;
+				SubjectInstructionsText.text = "EMD Test Passive.";
+				break;
 			}
 		}
 
@@ -234,171 +216,197 @@ public class CenterControl : MonoBehaviour
         {
             case TestStates.NotInitialised:
                 InitButton.interactable = true;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;   
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;   
                 StopButton.interactable = false;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = true; 
+                SubjectIDInputField.interactable = true; 
                 SessionIDInputField.interactable = true;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.Initialised:
                 InitButton.interactable = true;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = true;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
                 StopButton.interactable = false;
                 QuitButton.interactable = true;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.MvtRecording:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
 				StopButton.interactable = true;
 				QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break; 
             case TestStates.MvtRecorded:
-                InitButton.interactable = false;
-                EMGToggle.interactable = false;
+                InitButton.interactable = false;         
                 RecordButton.interactable = false;
                 TestButton.interactable = true;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
                 StopButton.interactable = true;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.MvtTesting:
-                InitButton.interactable = false;
-                EMGToggle.interactable = false;
+                InitButton.interactable = false;    
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
                 StopButton.interactable = true;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;            
             case TestStates.MvtTested:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = true;
-                StartButton.interactable = true;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = true;
+                EMDVButton.interactable = true;
+                EMDPButton.interactable = true;
+                ReturnButton.interactable = false;
                 StopButton.interactable = true;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
-            case TestStates.BtwTrialCheck:
+            case TestStates.EMDstatic:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = true;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = true;
                 StopButton.interactable = true;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
-                ProgressSlider.interactable = true;
-                break;
-            case TestStates.TrialInProgress:
-                InitButton.interactable = false;
                 EMGToggle.interactable = false;
+                ProgressSlider.interactable = false;
+                break;
+			case TestStates.EMDvoluntary:
+                InitButton.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = true;
                 StopButton.interactable = true;
                 QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
-                ProgressSlider.interactable = true;
-                break;
-            case TestStates.TrialFinished:
-                InitButton.interactable = false;
                 EMGToggle.interactable = false;
-                RecordButton.interactable = true;
+                ProgressSlider.interactable = false;
+                break;
+			case TestStates.EMDpassive:
+                InitButton.interactable = false;
+                RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
-				StopButton.interactable = true;
-				QuitButton.interactable = true;
-                PatientIDInputField.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = true;
+                StopButton.interactable = true;
+                QuitButton.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.MaxForceDetcted:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = true;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = true;
 				StopButton.interactable = true;
 				QuitButton.interactable = true;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.MinJerkFailed:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = true;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = true;
 				StopButton.interactable = true;
 				QuitButton.interactable = true;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
 			case TestStates.RobotDisabled:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
 				StopButton.interactable = true;
 				QuitButton.interactable = true;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
             case TestStates.Quited:
                 InitButton.interactable = false;
-                EMGToggle.interactable = false;
                 RecordButton.interactable = false;
                 TestButton.interactable = false;
-                StartButton.interactable = false;
-                ContinueButton.interactable = false;
+                EMDSButton.interactable = false;
+                EMDVButton.interactable = false;
+                EMDPButton.interactable = false;
+                ReturnButton.interactable = false;
 				StopButton.interactable = false;
 				QuitButton.interactable = false;
-                PatientIDInputField.interactable = false;
+                SubjectIDInputField.interactable = false;
                 SessionIDInputField.interactable = false;
+                EMGToggle.interactable = false;
                 ProgressSlider.interactable = false;
                 break;
         }
@@ -486,12 +494,13 @@ public class CenterControl : MonoBehaviour
         {
             long init_time = t0;
             //M2Robot.Init("127.0.0.1"); //locally
+            M2Robot.Init(init_time, "127.0.0.1", 2048); //locally (updated)
             //M2Robot.Init("192.168.6.2"); //Linux
-            M2Robot.Init(init_time, "192.168.7.2", 2048); //Windows
+            //M2Robot.Init(init_time, "192.168.7.2", 2048); //Windows
             //M2Robot.Init(start_time); //Windows
             if(!M2Robot.IsInitialised())
 				return;
-			CurrentCSVFilenameCORC = "PatientID_" + PatientIDInputField.text + "_SessionID_" + SessionIDInputField.text;
+			CurrentCSVFilenameCORC = "SubjectID_" + SubjectIDInputField.text + "_SessionID_" + SessionIDInputField.text;
 			string csvfullfilenameCORC = csvpath + "\\" + CurrentCSVFilenameCORC + "_CORC.csv";
 			M2Robot.SetLoggingFile(csvfullfilenameCORC);
 			M2Robot.SetLogging(true); //start or stop logging to file
@@ -512,7 +521,7 @@ public class CenterControl : MonoBehaviour
             //EMGStateTxt.text = EMG.GetNbSensors() + "EMGs connected.";
             EMGToggle.GetComponentInChildren<Text>().text = EMG.GetNbSensors() + "EMGs connected.";
             EMGToggle.GetComponentInChildren<Text>().color = new Color(0.1f, 1.0f, 0.1f);
-            CurrentCSVFilenameEMG = "PatientID_" + PatientIDInputField.text + "_SessionID_" + SessionIDInputField.text;
+            CurrentCSVFilenameEMG = "SubjectID_" + SubjectIDInputField.text + "_SessionID_" + SessionIDInputField.text;
 			string csvfullfilenameEMG = csvpath + "\\" + CurrentCSVFilenameEMG + "_EMG.csv";
 			EMG.StartRecording(csvfullfilenameEMG);
         }
@@ -542,13 +551,23 @@ public class CenterControl : MonoBehaviour
     }
 
 
-    void Start_cb()
+    void EMDS_cb()
     {
-	    M2Robot.SendCmd("TRIA");
+	    M2Robot.SendCmd("EMDS");
+    }
+    
+    void EMDV_cb()
+    {
+	    M2Robot.SendCmd("EMDV");
+    }
+    
+	void EMDP_cb()
+    {
+	    M2Robot.SendCmd("EMDP");
     }
 
 
-    void Continue_cb()
+    void Return_cb()
     {
 	    M2Robot.SendCmd("MFRT");
     }
